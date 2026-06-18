@@ -1,4 +1,4 @@
-# Luật 1 Template: Cấm image tag :latest (K8sAllowedRepos / K8sContainerAllowedImages)
+# Luật 1 Template: Cấm image tag :latest
 apiVersion: templates.gatekeeper.sh/v1
 kind: ConstraintTemplate
 metadata:
@@ -22,8 +22,17 @@ spec:
     - target: admission.k8s.gatekeeper.sh
       rego: |
         package k8sdisallowedtags
+
+        # gom container của CẢ Pod (spec.containers) LẪN workload (spec.template.spec.containers)
+        all_containers[c] {
+          c := input.review.object.spec.containers[_]
+        }
+        all_containers[c] {
+          c := input.review.object.spec.template.spec.containers[_]
+        }
+
         violation[{"msg": msg}] {
-          container := input.review.object.spec.template.spec.containers[_]
+          container := all_containers[_]
           tag := input.parameters.tags[_]
           endswith(container.image, concat("", [":", tag]))
           msg := sprintf("Image [%v] sử dụng tag bị cấm [%v]", [container.image, tag])
@@ -46,15 +55,23 @@ spec:
     - target: admission.k8s.gatekeeper.sh
       rego: |
         package k8scontainerlimits
+
+        all_containers[c] {
+          c := input.review.object.spec.containers[_]
+        }
+        all_containers[c] {
+          c := input.review.object.spec.template.spec.containers[_]
+        }
+
         violation[{"msg": msg}] {
-          container := input.review.object.spec.template.spec.containers[_]
+          container := all_containers[_]
           not container.resources.limits.cpu
-          msg := sprintf("Container [%v] trong Deployment thiếu cpu limit.", [container.name])
+          msg := sprintf("Container [%v] thiếu cpu limit.", [container.name])
         }
         violation[{"msg": msg}] {
-          container := input.review.object.spec.template.spec.containers[_]
+          container := all_containers[_]
           not container.resources.limits.memory
-          msg := sprintf("Container [%v] trong Deployment thiếu memory limit.", [container.name])
+          msg := sprintf("Container [%v] thiếu memory limit.", [container.name])
         }
 
 ---
@@ -74,14 +91,29 @@ spec:
     - target: admission.k8s.gatekeeper.sh
       rego: |
         package k8sblockrootuser
-        violation[{"msg": msg}] {
-          container := input.review.object.spec.template.spec.containers[_]
-          container.securityContext.runAsUser == 0
-          msg := sprintf("Container [%v] cấu hình chạy bằng quyền root (runAsUser: 0) là không hợp lệ.", [container.name])
+
+        all_containers[c] {
+          c := input.review.object.spec.containers[_]
         }
+        all_containers[c] {
+          c := input.review.object.spec.template.spec.containers[_]
+        }
+
+        # runAsUser:0 ở cấp container
+        violation[{"msg": msg}] {
+          container := all_containers[_]
+          container.securityContext.runAsUser == 0
+          msg := sprintf("Container [%v] chạy bằng quyền root (runAsUser: 0).", [container.name])
+        }
+        # runAsUser:0 ở securityContext của Pod
+        violation[{"msg": msg}] {
+          input.review.object.spec.securityContext.runAsUser == 0
+          msg := "Pod SecurityContext chạy bằng quyền root (runAsUser: 0)."
+        }
+        # runAsUser:0 ở securityContext trong template (Deployment/Rollout)
         violation[{"msg": msg}] {
           input.review.object.spec.template.spec.securityContext.runAsUser == 0
-          msg := "Pod SecurityContext cấu hình chạy bằng quyền root (runAsUser: 0) là không hợp lệ."
+          msg := "Pod template SecurityContext chạy bằng quyền root (runAsUser: 0)."
         }
 
 ---
@@ -101,7 +133,14 @@ spec:
     - target: admission.k8s.gatekeeper.sh
       rego: |
         package k8sblockhostnetwork
+
+        # hostNetwork ở Pod
+        violation[{"msg": msg}] {
+          input.review.object.spec.hostNetwork == true
+          msg := "Không được phép sử dụng hostNetwork: true."
+        }
+        # hostNetwork trong template (Deployment/Rollout)
         violation[{"msg": msg}] {
           input.review.object.spec.template.spec.hostNetwork == true
-          msg := "Không được phép sử dụng chế độ mạng hostNetwork: true."
+          msg := "Không được phép sử dụng hostNetwork: true."
         }
