@@ -4,13 +4,16 @@ metadata:
   name: app
   namespace: app-secrets
   annotations:
-    argocd.argoproj.io/sync-wave: "3"  
+    argocd.argoproj.io/sync-wave: "3"
+  labels:
+    owner: tan
 spec:
-  automountServiceAccountToken: false  
+  automountServiceAccountToken: false
   containers:
     - name: app
       image: busybox
       command: ["sh", "-c", "echo DB_USER=$DB_USER; sleep 3600"]
+
       env:
         - name: DB_USER
           valueFrom:
@@ -22,6 +25,12 @@ spec:
             secretKeyRef:
               name: db-credentials-k8s
               key: password
+
+      resources:
+        limits:
+          cpu: "100m"
+          memory: "128Mi"
+
       securityContext:
         readOnlyRootFilesystem: true
         allowPrivilegeEscalation: false
