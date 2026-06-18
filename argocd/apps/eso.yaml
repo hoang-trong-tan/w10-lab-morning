@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: external-secrets-install
+  name: external-secrets-install-1
   namespace: argocd
   annotations:
     # Chạy sau Gatekeeper (wave -5) nhưng trước các app nghiệp vụ (wave 0)
