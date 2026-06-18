@@ -35,7 +35,7 @@ spec:
           container := all_containers[_]
           tag := input.parameters.tags[_]
           endswith(container.image, concat("", [":", tag]))
-          msg := sprintf("Image [%v] sử dụng tag bị cấm [%v]", [container.image, tag])
+          msg := sprintf("Image [%v] sử dụng tag bị cấm: [%v]", [container.image, tag])
         }
 
 ---
