@@ -25,6 +25,8 @@ spec:
     automated:
       prune: true
       selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
 
 --- 
 # ArgoCD App: Deploy AnalysisTemplate cho canary analysis
