@@ -2,7 +2,7 @@
 apiVersion: constraints.gatekeeper.sh/v1beta1 
 kind: K8sDisallowedTags
 metadata:
-  name: block-latest-tag
+  name: block-latest-tag1
   annotations:
     argocd.argoproj.io/sync-wave: "2"
 spec:
