@@ -9,7 +9,7 @@ app = Flask(__name__)
 PrometheusMetrics(app)  # Tự thêm /metrics
 
 ERROR_RATE = float(os.getenv("ERROR_RATE", "0"))
-VERSION = os.getenv("VERSION", "v3_test_trivyignore")
+VERSION = os.getenv("VERSION", "v3_test_trivyignore_1")
 
 @app.get("/")
 def index():
