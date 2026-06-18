@@ -54,5 +54,5 @@ spec:
           required := {label | label := input.parameters.labels[_]}
           missing := required - provided
           count(missing) > 0
-          msg := sprintf("Workload thiếu label bắt buộc: %v", [missing])
+          msg := sprintf("Workload này thiếu label bắt buộc: %v", [missing])
         }
