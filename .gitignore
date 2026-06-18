@@ -16,3 +16,4 @@ rbac/*.key
 rbac/alice-csr.yaml
 rbac/bob-csr.yaml
 rbac/carol-csr.yaml
+ESO/iam-policy.json

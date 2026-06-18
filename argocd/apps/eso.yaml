@@ -1,0 +1,30 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: external-secrets-install
+  namespace: argocd
+  annotations:
+    # Chạy sau Gatekeeper (wave -5) nhưng trước các app nghiệp vụ (wave 0)
+    argocd.argoproj.io/sync-wave: "-4"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    # Sử dụng Helm Chart chính thức của External Secrets Operator
+    chart: external-secrets
+    repoURL: https://charts.external-secrets.io
+    targetRevision: 0.9.11 # Bạn có thể check và thay bằng version mới nhất cần dùng
+    helm:
+      parameters:
+        # Tự động cài đặt các Custom Resource Definitions (CRDs) đi kèm
+        - name: installCRDs
+          value: "true"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: external-secrets
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    
