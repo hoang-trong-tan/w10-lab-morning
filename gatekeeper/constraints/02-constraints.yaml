@@ -11,6 +11,8 @@ spec:
     kinds:
       - apiGroups: ["apps"]
         kinds: ["Deployment"]
+      - apiGroups: [""]
+        kinds: ["pod"]
   parameters:
     tags: ["latest"]
 
@@ -28,6 +30,8 @@ spec:
     kinds:
       - apiGroups: ["apps"]
         kinds: ["Deployment"]
+      - apiGroups: [""]
+        kinds: ["pod"]
 
 ---
 # 3. Chặn runAsUser: 0
@@ -43,6 +47,8 @@ spec:
     kinds:
       - apiGroups: ["apps"]
         kinds: ["Deployment"]
+      - apiGroups: [""]
+        kinds: ["pod"]
 
 ---
 # 4. Chặn hostNetwork: true
@@ -58,3 +64,5 @@ spec:
     kinds:
       - apiGroups: ["apps"]
         kinds: ["Deployment"]
+      - apiGroups: [""]
+        kinds: ["pod"]
