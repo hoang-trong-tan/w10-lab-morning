@@ -12,6 +12,7 @@ spec:
     kinds:
       - apiGroups: ["", "apps", "argoproj.io"]
         kinds: ["Pod", "Deployment", "ReplicaSet", "Rollout"]
+    excludedNamespaces: ["external-secrets", "kube-system", "argocd"]
   parameters:
     tags: ["latest"]
 
@@ -29,6 +30,7 @@ spec:
     kinds:
       - apiGroups: ["", "apps", "argoproj.io"]
         kinds: ["Pod", "Deployment", "ReplicaSet", "Rollout"]
+    excludedNamespaces: ["external-secrets", "kube-system", "argocd"]
 
 ---
 # 3. Chặn runAsUser: 0
@@ -44,6 +46,7 @@ spec:
     kinds:
       - apiGroups: ["", "apps", "argoproj.io"]
         kinds: ["Pod", "Deployment", "ReplicaSet", "Rollout"]
+    excludedNamespaces: ["external-secrets", "kube-system", "argocd"]
 
 ---
 # 4. Chặn hostNetwork: true
@@ -59,3 +62,4 @@ spec:
     kinds:
       - apiGroups: ["", "apps", "argoproj.io"]
         kinds: ["Pod", "Deployment", "ReplicaSet", "Rollout"]
+    excludedNamespaces: ["external-secrets", "kube-system", "argocd"]
