@@ -14,6 +14,7 @@ spec:
     metadata:
       labels:
         app: payments-api
+        owner: team-b
     spec:
       containers:
       - name: api
@@ -24,8 +25,13 @@ spec:
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
-        # Cố tình KHÔNG cấu hình resources limits ở đây
-        # Để test chức năng LimitRange tự động chèn vào
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
 ---
 apiVersion: v1
 kind: Service
