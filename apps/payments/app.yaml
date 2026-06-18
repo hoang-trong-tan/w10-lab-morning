@@ -5,6 +5,7 @@ metadata:
   namespace: payments
   labels:
     app: payments-api
+    owner: team-b
 spec:
   replicas: 1
   selector:
