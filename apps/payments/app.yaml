@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payments-api
+  namespace: payments
+  labels:
+    app: payments-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payments-api
+  template:
+    metadata:
+      labels:
+        app: payments-api
+    spec:
+      containers:
+      - name: api
+        # Image này sẽ được kiểm duyệt bởi Admission Controller
+        # Nếu chưa ký (VD: nginx:latest), Pod sẽ không được tạo
+        image: ghcr.io/hoang-trong-tan/w10-api:v0.0.5
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        # Cố tình KHÔNG cấu hình resources limits ở đây
+        # Để test chức năng LimitRange tự động chèn vào
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: payments-api
+  namespace: payments
+spec:
+  selector:
+    app: payments-api
+  ports:
+  - port: 8080
+    targetPort: 8080

@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: payments
+  labels:
+    # Gắn label để Admission Controller (Cosign) tự động áp dụng chính sách ký image cho namespace này
+    policy.sigstore.dev/include: "true"
+  annotations:
+    # Chạy sau Gatekeeper (wave -5) nhưng trước các app nghiệp vụ (wave 0)
+    argocd.argoproj.io/sync-wave: "0"

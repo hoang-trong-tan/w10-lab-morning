@@ -1,0 +1,28 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+  name: payments-dev-role
+  namespace: payments
+rules:
+- apiGroups: ["", "apps"]
+  resources: ["pods", "deployments", "replicasets", "services", "configmaps"]
+  verbs: ["create", "get", "list", "watch", "update", "patch", "delete"]
+# CHÚ Ý: Tuyệt đối không cho phép truy cập tài nguyên "secrets" và "rolebindings"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+  name: payments-dev-binding
+  namespace: payments
+subjects:
+- kind: User
+  name: payments-dev
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role
+  name: payments-dev-role
+  apiGroup: rbac.authorization.k8s.io

@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-and-isolate
+  namespace: payments
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  podSelector: {} # Áp dụng cho mọi pod trong namespace payments
+  policyTypes:
+  - Ingress
+  - Egress
+  # 1. Ingress: Trống (không có rule nào) -> Deny ALL inbound traffic từ bên ngoài ns
+  ingress: []
+  
+  # 2. Egress: Chỉ cho phép gọi nội bộ và phân giải DNS
+  egress:
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: kube-system
+    ports:
+    - protocol: UDP
+      port: 53
+    - protocol: TCP
+      port: 53
+  - to:
+    - podSelector: {} # Cho phép gọi các pod khác CÙNG TRONG namespace payments

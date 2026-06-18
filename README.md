@@ -202,6 +202,14 @@ kubectl get all -n monitoring
 kubectl delete ns argocd
 
 # Stop minikube
-minikube stop -p w10
 minikube delete -p w10
 ```
+
+## Lab Multi-tenancy: Đón team payments vào platform
+**1. Vì sao guardrail cũ tự áp cho team B mà không cần viết luật mới?**
+Các hệ thống bảo vệ như Sigstore Policy Controller hay OPA Gatekeeper hoạt động dưới dạng **Admission Webhook** tại mức Cluster (bắt tay trực tiếp với Kubernetes API Server). Khi một resource mới được tạo (như Pod), request đó bắt buộc phải đi qua API Server. Bằng cách gán nhãn (`label`) phù hợp cho namespace `payments` (vd: `policy.sigstore.dev/include=true`), mọi luật lệ trước đó sẽ tự động bắt lấy các request của namespace này để kiểm tra mà không cần ta phải định nghĩa lại policy. Thiết kế này giúp quản lý tập trung thay vì quản lý rời rạc ở từng namespace.
+
+**2. Role/RoleBinding khác ClusterRoleBinding ra sao để giữ cô lập?**
+- `Role` và `RoleBinding` bị **cô lập hoàn toàn trong ranh giới của một Namespace**. Khi ta cấp quyền tạo Pod cho user bằng RoleBinding ở namespace `payments`, user đó sang namespace `demo` sẽ hoàn toàn "vô hình" (không có quyền gì).
+- `ClusterRole` và `ClusterRoleBinding` có phạm vi **toàn Cluster**. Nếu cấp quyền qua ClusterRoleBinding, user đó sẽ có quyền trên TẤT CẢ các namespace, phá vỡ hoàn toàn quy tắc cô lập đa khách hàng (multi-tenancy). Do đó, đối với team B, ta chỉ sử dụng Role/RoleBinding.
+
