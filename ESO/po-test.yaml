@@ -21,7 +21,7 @@ spec:
         - |
           while true; do
             echo "DB_USER=$(cat /etc/secrets/username)"
-            sleep 30
+            sleep 300
           done
 
       volumeMounts:
