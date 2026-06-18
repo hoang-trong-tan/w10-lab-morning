@@ -1,0 +1,50 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: gatekeeper-install
+  namespace: argocd
+  annotations:
+    # Thiết lập sync-wave âm để Gatekeeper chạy trước các app khác
+    argocd.argoproj.io/sync-wave: "-5"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    # Sử dụng trực tiếp Helm Chart chính thức của Gatekeeper
+    chart: gatekeeper
+    repoURL: https://open-policy-agent.github.io/gatekeeper/charts
+    targetRevision: 3.14.0 # Thay bằng version phù hợp bạn muốn dùng
+    helm:
+      values: |
+        currentNamespace: gatekeeper
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: gatekeeper
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+--- 
+# ArgoCD App: Deploy AnalysisTemplate cho canary analysis
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: gatekeeper-constraints
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/hoang-trong-tan/w10-lab-morning.git
+    path: gatekeeper/constraints
+    targetRevision: main
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: gatekeeper
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - ServerSideApply=true
