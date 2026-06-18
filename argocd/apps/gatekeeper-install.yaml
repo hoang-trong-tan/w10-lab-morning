@@ -15,12 +15,9 @@ spec:
     chart: gatekeeper
     repoURL: https://open-policy-agent.github.io/gatekeeper/charts
     targetRevision: 3.14.0 # Thay bằng version phù hợp bạn muốn dùng
-    helm:
-      values: |
-        currentNamespace: gatekeeper
   destination:
     server: https://kubernetes.default.svc
-    namespace: gatekeeper
+    namespace: gatekeeper-system
   syncPolicy:
     automated:
       prune: true
