@@ -1,4 +1,5 @@
 # Lab 2 buổi chiều: Flask app với /metrics
+# Trigger CVE test for Trivy
 import os
 import random
 from flask import Flask, jsonify
