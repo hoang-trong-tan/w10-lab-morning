@@ -18,6 +18,7 @@ spec:
     metadata:
       labels:
         app: api
+        owner: tan
     spec:
       containers:
       - name: api
