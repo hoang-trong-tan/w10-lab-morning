@@ -5,6 +5,7 @@ metadata:
   namespace: app-secrets
   annotations:
     argocd.argoproj.io/sync-wave: "3"
+    argocd.argoproj.io/sync-options: Replace=true # Thêm dòng này vào
   labels:
     owner: tan
 
@@ -21,7 +22,7 @@ spec:
         - |
           while true; do
             echo "DB_USER=$(cat /etc/secrets/username)"
-            sleep 300
+            sleep 350
           done
 
       volumeMounts:
