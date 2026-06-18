@@ -1,0 +1,14 @@
+apiVersion: policy.sigstore.dev/v1beta1
+kind: ClusterImagePolicy
+metadata:
+  name: image-policy
+spec:
+  images:
+  - glob: "ghcr.io/**"
+  authorities:
+  - key:
+      data: |
+        -----BEGIN PUBLIC KEY-----
+        MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEcURVNEWOoY4ygorMoeB/hHNWY88e
+        rMdEClH7+zvHBYG7lHdxkq2EKT3oBmLMYbogMg+A6V7dyXKfvGKk9YLokw==
+        -----END PUBLIC KEY-----
