@@ -5,10 +5,10 @@ from flask import Flask, jsonify
 from prometheus_flask_exporter import PrometheusMetrics
 
 app = Flask(__name__)
-PrometheusMetrics(app)  # Tự thêm /metrics
+PrometheusMetrics(app)  # Tự thêm /metrics vào đây
 
 ERROR_RATE = float(os.getenv("ERROR_RATE", "0"))
-VERSION = os.getenv("VERSION", "v1")
+VERSION = os.getenv("VERSION", "v1.1")
 
 @app.get("/")
 def index():
