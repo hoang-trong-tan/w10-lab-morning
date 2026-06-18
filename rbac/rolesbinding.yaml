@@ -1,0 +1,45 @@
+# 1. Gán Role 1 (CRUD trong namespace demo) cho Alice
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: alice-crud-workload-binding
+  namespace: demo
+subjects:
+  - kind: User
+    name: alice
+    apiGroup: rbac.authorization.k8s.io
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: demo-workload-crud-role
+
+--- 
+# 2. Gán Role 2 (Thao tác Pod toàn cụm) cho Bob
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: bob-sre-binding
+  # Bỏ namespace vì ClusterRoleBinding áp dụng trên toàn cụm
+subjects:
+  - kind: User
+    name: bob
+    apiGroup: rbac.authorization.k8s.io
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole 
+  name: global-pod-admin-clusterrole
+
+---
+# 3. Gán Role 3 (Chỉ đọc toàn cụm) cho Carol
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: carol-readonly-binding
+subjects:
+  - kind: User
+    name: carol
+    apiGroup: rbac.authorization.k8s.io
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: global-readonly-clusterrole

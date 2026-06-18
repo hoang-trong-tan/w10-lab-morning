@@ -10,3 +10,9 @@ k8s-monitoring/alertmanager-config.yaml
 
 # OS
 .DS_Store
+rbac/*.csr
+rbac/*.crt
+rbac/*.key
+rbac/alice-csr.yaml
+rbac/bob-csr.yaml
+rbac/carol-csr.yaml

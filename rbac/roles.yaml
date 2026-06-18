@@ -1,0 +1,35 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: demo
+  name: demo-workload-crud-role
+rules:
+  # Quyền CRUD cho Pod và Service (thuộc core API group)
+  - apiGroups: [""]
+    resources: ["pods", "services"]
+    verbs: ["create", "get", "list", "watch", "update", "patch", "delete"]
+  # Quyền CRUD cho Deployment (thuộc apps API group)
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["create", "get", "list", "watch", "update", "patch", "delete"]
+
+--- 
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: global-pod-admin-clusterrole
+rules:
+  - apiGroups: [""]
+    # Bao gồm pod và các thao tác phổ biến như xem log, port-forward, exec
+    resources: ["pods", "pods/log", "pods/exec", "pods/portforward"]
+    verbs: ["*"] # Dấu * đại diện cho mọi hành động (create, delete, get, list, patch, update, watch...
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: global-readonly-clusterrole
+rules:
+  - apiGroups: ["*"]
+    resources: ["*"]
+    verbs: ["get", "list", "watch"]
