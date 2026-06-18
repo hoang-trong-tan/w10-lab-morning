@@ -1,0 +1,107 @@
+# Luật 1 Template: Cấm image tag :latest (K8sAllowedRepos / K8sContainerAllowedImages)
+apiVersion: templates.gatekeeper.sh/v1
+kind: ConstraintTemplate
+metadata:
+  name: k8sdisallowedtags
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  crd:
+    spec:
+      names:
+        kind: K8sDisallowedTags
+      validation:
+        openAPIV3Schema:
+          type: object
+          properties:
+            tags:
+              type: array
+              items:
+                type: string
+  targets:
+    - target: admission.k8s.gatekeeper.sh
+      rego: |
+        package k8sdisallowedtags
+        violation[{"msg": msg}] {
+          container := input.review.object.spec.template.spec.containers[_]
+          tag := input.parameters.tags[_]
+          endswith(container.image, concat("", [":", tag]))
+          msg := sprintf("Image [%v] sử dụng tag bị cấm [%v]", [container.image, tag])
+        }
+
+---
+# Luật 2 Template: Bắt buộc có resources.limits
+apiVersion: templates.gatekeeper.sh/v1
+kind: ConstraintTemplate
+metadata:
+  name: k8scontainerlimits
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  crd:
+    spec:
+      names:
+        kind: K8sContainerLimits
+  targets:
+    - target: admission.k8s.gatekeeper.sh
+      rego: |
+        package k8scontainerlimits
+        violation[{"msg": msg}] {
+          container := input.review.object.spec.template.spec.containers[_]
+          not container.resources.limits.cpu
+          msg := sprintf("Container [%v] trong Deployment thiếu cpu limit.", [container.name])
+        }
+        violation[{"msg": msg}] {
+          container := input.review.object.spec.template.spec.containers[_]
+          not container.resources.limits.memory
+          msg := sprintf("Container [%v] trong Deployment thiếu memory limit.", [container.name])
+        }
+
+---
+# Luật 3 Template: Cấm runAsUser: 0 (Chạy dưới quyền root)
+apiVersion: templates.gatekeeper.sh/v1
+kind: ConstraintTemplate
+metadata:
+  name: k8sblockrootuser
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  crd:
+    spec:
+      names:
+        kind: K8sBlockRootUser
+  targets:
+    - target: admission.k8s.gatekeeper.sh
+      rego: |
+        package k8sblockrootuser
+        violation[{"msg": msg}] {
+          container := input.review.object.spec.template.spec.containers[_]
+          container.securityContext.runAsUser == 0
+          msg := sprintf("Container [%v] cấu hình chạy bằng quyền root (runAsUser: 0) là không hợp lệ.", [container.name])
+        }
+        violation[{"msg": msg}] {
+          input.review.object.spec.template.spec.securityContext.runAsUser == 0
+          msg := "Pod SecurityContext cấu hình chạy bằng quyền root (runAsUser: 0) là không hợp lệ."
+        }
+
+---
+# Luật 4 Template: Cấm hostNetwork: true
+apiVersion: templates.gatekeeper.sh/v1
+kind: ConstraintTemplate
+metadata:
+  name: k8sblockhostnetwork
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  crd:
+    spec:
+      names:
+        kind: K8sBlockHostNetwork
+  targets:
+    - target: admission.k8s.gatekeeper.sh
+      rego: |
+        package k8sblockhostnetwork
+        violation[{"msg": msg}] {
+          input.review.object.spec.template.spec.hostNetwork == true
+          msg := "Không được phép sử dụng chế độ mạng hostNetwork: true."
+        }
