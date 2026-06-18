@@ -1,3 +1,4 @@
+---
 # 1. Chặn tag :latest
 apiVersion: constraints.gatekeeper.sh/v1beta1 
 kind: K8sDisallowedTags
@@ -9,10 +10,8 @@ spec:
   enforcementAction: deny
   match:
     kinds:
-      - apiGroups: ["apps"]
-        kinds: ["Deployment"]
-      - apiGroups: [""]
-        kinds: ["Pod"]
+      - apiGroups: ["", "apps", "argoproj.io"]
+        kinds: ["Pod", "Deployment", "ReplicaSet", "Rollout"]
   parameters:
     tags: ["latest"]
 
@@ -28,10 +27,8 @@ spec:
   enforcementAction: deny
   match:
     kinds:
-      - apiGroups: ["apps"]
-        kinds: ["Deployment"]
-      - apiGroups: [""]
-        kinds: ["Pod"]
+      - apiGroups: ["", "apps", "argoproj.io"]
+        kinds: ["Pod", "Deployment", "ReplicaSet", "Rollout"]
 
 ---
 # 3. Chặn runAsUser: 0
@@ -45,10 +42,8 @@ spec:
   enforcementAction: deny
   match:
     kinds:
-      - apiGroups: ["apps"]
-        kinds: ["Deployment"]
-      - apiGroups: [""]
-        kinds: ["Pod"]
+      - apiGroups: ["", "apps", "argoproj.io"]
+        kinds: ["Pod", "Deployment", "ReplicaSet", "Rollout"]
 
 ---
 # 4. Chặn hostNetwork: true
@@ -62,7 +57,5 @@ spec:
   enforcementAction: deny
   match:
     kinds:
-      - apiGroups: ["apps"]
-        kinds: ["Deployment"]
-      - apiGroups: [""]
-        kinds: ["Pod"]
+      - apiGroups: ["", "apps", "argoproj.io"]
+        kinds: ["Pod", "Deployment", "ReplicaSet", "Rollout"]
