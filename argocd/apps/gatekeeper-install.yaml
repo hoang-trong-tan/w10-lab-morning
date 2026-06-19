@@ -50,3 +50,9 @@ spec:
       selfHeal: true
     syncOptions:
     - ServerSideApply=true
+    retry:
+      limit: 5 # number of failed sync attempt retries
+      backoff:
+        duration: 5s # the amount to back off
+        factor: 2 # a factor to multiply the base duration after each failed retry
+        maxDuration: 3m # the maximum amount of time allowed for the backoff strategy
